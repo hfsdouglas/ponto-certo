@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Dia {
+  domingo
+  segunda
+  terca
+  quarta
+  quinta
+  sexta
+  sabado
+}
+
+model Usuario {
+  id            String        @id @default(uuid())
+  nome_completo String
+  email         String        @unique
+  senha         String
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @default(now())
+  Funcionario   Funcionario[]
+
+  @@map("usuario")
+}
+
+model Funcionario {
+  id            String         @id @default(uuid())
+  usuario_id    String
+  hora_extra    Boolean?       @default(false)
+  usuario       Usuario        @relation(fields: [usuario_id], references: [id])
+  carga_horaria CargaHoraria[]
+  ponto         Ponto[]
+
+  @@map("funcionario")
+}
+
+model CargaHoraria {
+  id             String      @id @default(uuid())
+  funcionario    Funcionario @relation(fields: [funcionario_id], references: [id])
+  funcionario_id String
+  dia            Dia
+  entrada        DateTime
+  saida          DateTime
+
+  @@map("carga_horaria")
+}
+
+model Ponto {
+  id             String      @id @default(uuid())
+  funcionario    Funcionario @relation(fields: [funcionario_id], references: [id])
+  funcionario_id String
+  dia            Dia
+  entrada        DateTime
+  saida          DateTime
+
+  @@map("ponto")
+}
