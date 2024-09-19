@@ -1,10 +1,10 @@
 import fastify from 'fastify'
 import jwt from '@fastify/jwt'
 import cookie from '@fastify/cookie'
+import cors from '@fastify/cors'
 
-import { Login } from './routes/login-route'
-import { SetPontoEntrada } from './routes/set-ponto-entrada-route'
-import { AuthLogin } from '../middlewares/auth'
+import { Login } from './routes/login'
+import { SetPontoEntrada } from './routes/entrada'
 
 const app = fastify()
 
@@ -16,7 +16,10 @@ app.register(cookie, {
   secret: '@cookie-ponto-certo-secret',
 })
 
-app.register(AuthLogin)
+app.register(cors, {
+  origin: '*',
+})
+
 app.register(Login)
 app.register(SetPontoEntrada)
 

@@ -1,14 +1,12 @@
 import type { FastifyInstance } from 'fastify'
 
-export async function AuthLogin(app: FastifyInstance) {
-  app.addHook('onRequest', async (request, reply) => {
+export default function Auth(app: FastifyInstance) {
+  app.addHook('preHandler', async (request, reply) => {
     const token = request.cookies.token
-
-    console.log(token)
 
     if (!token) {
       reply.code(401).send({
-        message: 'Sem token!',
+        message: 'Token não fornecido!',
         code: 401,
       })
     }
@@ -17,7 +15,10 @@ export async function AuthLogin(app: FastifyInstance) {
       const decoded = app.jwt.verify(token)
       request.user = decoded
     } catch (error) {
-      reply.status(401).send({ message: 'Token inválido!', code: 401 })
+      reply.code(401).send({
+        message: 'Token inválido!',
+        code: 401,
+      })
     }
   })
 }

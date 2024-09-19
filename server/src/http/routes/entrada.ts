@@ -1,15 +1,11 @@
 import z from 'zod'
 import type { FastifyInstance } from 'fastify'
+import Auth from '../../middleware/auth'
 
 export async function SetPontoEntrada(app: FastifyInstance) {
-  app.post('/funcionario/:id/entrada', async (request, reply) => {
-    if (!request.user) {
-      reply.code(401).send({
-        message: 'Acesso restrito!',
-        code: 401,
-      })
-    }
+  await Auth(app)
 
+  app.post('/funcionario/:id/entrada', async (request, reply) => {
     const PontoEntradaParamsSchema = z.object({
       id: z.string().uuid(),
     })

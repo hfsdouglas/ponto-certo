@@ -6,15 +6,15 @@ export async function Login(app: FastifyInstance) {
   app.post('/login', async (request, reply) => {
     const LoginBodySchema = z.object({
       email: z.string().email(),
-      password: z.string().min(8),
+      senha: z.string().min(8),
     })
 
-    const { email, password } = LoginBodySchema.parse(request.body)
+    const { email, senha } = LoginBodySchema.parse(request.body)
 
     const usuario = await prisma.usuario.findUnique({
       where: {
         email,
-        senha: password,
+        senha,
       },
     })
 
@@ -25,14 +25,14 @@ export async function Login(app: FastifyInstance) {
       })
     }
 
-    const secondsToExpire = 60 * 60 * 5
-
     const token = app.jwt.sign(
       {
-        id: usuario.id,
         email: usuario.email,
       },
-      { expiresIn: secondsToExpire }
+      {
+        sub: usuario.id,
+        expiresIn: '5 hours',
+      }
     )
 
     reply
